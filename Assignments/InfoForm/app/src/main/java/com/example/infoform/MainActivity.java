@@ -50,10 +50,10 @@ public class MainActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                alert();
                 if (canSubmit()) {
+
                     Toast.makeText(MainActivity.this, "Thành công", Toast.LENGTH_LONG).show();
-                } else {
-                    alert();
                 }
             }
         });
