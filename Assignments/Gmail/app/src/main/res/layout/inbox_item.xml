@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/sender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/image"
+        android:text="Sender"
+        android:textColor="@color/black"
+        android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sender"
+        android:layout_toStartOf="@id/favorite"
+        android:layout_toEndOf="@id/image"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Title"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/title"
+        android:layout_toStartOf="@id/favorite"
+        android:layout_toEndOf="@id/image"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Content"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/sender"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:text="time"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/favorite"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_below="@id/time"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_star" />
+</RelativeLayout>

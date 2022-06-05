@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.188" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/drawable/circle.xml" value="0.243" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/drawable/ic_dehaze.xml" value="0.12" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/drawable/ic_mode.xml" value="0.188" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/drawable/ic_search.xml" value="0.188" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/layout/inbox_item.xml" value="0.2421875" />
+        <entry key="..\:/Documents/Phat trien ung dung cho thiet bi di dong/Android Developer Fundamentals/Assignments/Gmail/app/src/main/res/menu/toolbar_menu.xml" value="0.25416666666666665" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
