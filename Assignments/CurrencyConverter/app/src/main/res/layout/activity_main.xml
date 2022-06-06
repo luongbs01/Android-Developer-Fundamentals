@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#DDDDDD"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/from_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="64sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/from_currency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/to_value"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="64sp" />
+
+        <Spinner
+            android:id="@+id/to_currency"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/rate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="36dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
+            android:text="rate"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:paddingBottom="4dp"
+        android:stretchColumns="0,1,2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <TableRow android:layout_weight="1">
+
+            <Button
+                style="@style/Button"
+                android:text="CE"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/CE"
+                style="@style/Button"
+                android:text="CE" />
+
+            <RelativeLayout
+                android:id="@+id/backspace"
+                style="@style/Button"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/layout_bg"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_backspace" />
+            </RelativeLayout>
+
+        </TableRow>
+
+        <TableRow android:layout_weight="1">
+
+            <Button
+                android:id="@+id/seven"
+                style="@style/Button"
+                android:text="7" />
+
+            <Button
+                android:id="@+id/eight"
+                style="@style/Button"
+                android:text="8" />
+
+            <Button
+                android:id="@+id/nine"
+                style="@style/Button"
+                android:text="9" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1">
+
+            <Button
+                android:id="@+id/four"
+                style="@style/Button"
+                android:text="4" />
+
+            <Button
+                android:id="@+id/five"
+                style="@style/Button"
+                android:text="5" />
+
+            <Button
+                android:id="@+id/six"
+                style="@style/Button"
+                android:text="6" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1">
+
+            <Button
+                android:id="@+id/one"
+                style="@style/Button"
+                android:text="1" />
+
+            <Button
+                android:id="@+id/two"
+                style="@style/Button"
+                android:text="2" />
+
+            <Button
+                android:id="@+id/three"
+                style="@style/Button"
+                android:text="3" />
+        </TableRow>
+
+        <TableRow android:layout_weight="1">
+
+            <Button
+                style="@style/Button"
+                android:text="0"
+                android:visibility="invisible" />
+
+            <Button
+                android:id="@+id/zero"
+                style="@style/Button"
+                android:text="0" />
+
+            <Button
+                android:id="@+id/point"
+                style="@style/Button"
+                android:text="." />
+        </TableRow>
+
+    </TableLayout>
+
+</LinearLayout>

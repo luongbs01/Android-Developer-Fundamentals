@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="currencies_array">
+        <item>Australia - Dollar</item>
+        <item>Canada - Dollar</item>
+        <item>China - Yuan</item>
+        <item>Europe - Euro</item>
+        <item>Japan - Yen</item>
+        <item>Korea - Won</item>
+        <item>Russia - Rouble</item>
+        <item>Singapore - Dollar</item>
+        <item>Switzerland - Franc</item>
+        <item>Thailand - Baht</item>
+        <item>United Kingdom - Pound</item>
+        <item>United States - Dollar</item>
+        <item>Vietnam - Dong</item>
+    </string-array>
+</resources>
