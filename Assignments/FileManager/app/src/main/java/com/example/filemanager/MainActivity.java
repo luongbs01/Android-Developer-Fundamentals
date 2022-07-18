@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,14 +21,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.Stack;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FileAdapter.OnFileClickListener {
 
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private FileAdapter adapter;
 
     private LinkedList<File> fileList = new LinkedList();
+    private Stack<File> fileStack = new Stack<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +42,21 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fileStack.pop();
+                processNavigation(fileStack.peek());
+            }
+        });
+        recyclerView = findViewById(R.id.recyclerView);
+        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(mDividerItemDecoration);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         String sdPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         Log.v("TAG", "sdPath: " + sdPath);
+        fileStack.add(Environment.getExternalStorageDirectory());
 
 //        try {
 //            String path = sdPath + "/test_read.txt";
@@ -109,19 +124,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        File file = new File(sdPath);
-        File[] files = file.listFiles();
-        for (File f : files) {
-            Log.v("TAG", f.getAbsolutePath());
-            fileList.add(f);
-        }
+        getAllFiles(sdPath);
 
-        recyclerView = findViewById(R.id.recyclerView);
-        DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(mDividerItemDecoration);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new FileAdapter(this, fileList);
+        adapter = new FileAdapter(this, this, fileList);
         recyclerView.setAdapter(adapter);
+    }
+
+    private void getAllFiles(String path) {
+        File file = new File(path);
+        fileList = new LinkedList<>();
+        File[] files = file.listFiles();
+        try {
+            for (File f : files) {
+                Log.v("TAG", f.getAbsolutePath());
+                fileList.add(f);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -136,4 +156,26 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onFileClick(File file) {
+        fileStack.push(file);
+        processNavigation(file);
+    }
+
+
+    private void processNavigation(File file) {
+        getAllFiles(file.getAbsolutePath());
+        adapter = new FileAdapter(MainActivity.this, MainActivity.this, fileList);
+        recyclerView.setAdapter(adapter);
+        Log.d("luong", "" + fileStack);
+        if (fileStack.size() == 1) {
+            toolbar.setNavigationIcon(null);
+            toolbar.setTitle("File Manager");
+        } else {
+            toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
+            toolbar.setTitle(file.getName());
+        }
+    }
+
 }

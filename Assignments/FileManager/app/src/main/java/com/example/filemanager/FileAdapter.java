@@ -20,9 +20,15 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
     private final LinkedList<File> fileList;
     private LayoutInflater inflater;
     private Context context;
+    private OnFileClickListener listener;
 
-    public FileAdapter(Context context, LinkedList<File> fileList) {
+    interface OnFileClickListener {
+        void onFileClick(File file);
+    }
+
+    public FileAdapter(Context context, OnFileClickListener listener, LinkedList<File> fileList) {
         this.context = context;
+        this.listener = listener;
         inflater = LayoutInflater.from(context);
         this.fileList = fileList;
     }
@@ -52,6 +58,9 @@ public class FileAdapter extends RecyclerView.Adapter<FileAdapter.FileViewHolder
                     intent.setData(uri);
                     context.startActivity(Intent.createChooser(intent, "Open file"));
 
+                }
+                else if (file.isDirectory()) {
+                    listener.onFileClick(file);
                 }
             }
         });
