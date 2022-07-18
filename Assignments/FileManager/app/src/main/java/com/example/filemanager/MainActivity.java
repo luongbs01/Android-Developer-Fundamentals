@@ -10,6 +10,9 @@ import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -128,6 +132,37 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
 
         adapter = new FileAdapter(this, this, fileList);
         recyclerView.setAdapter(adapter);
+
+        registerForContextMenu(recyclerView);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.context_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int position = -1;
+        try {
+            position = adapter.getPosition();
+        } catch (Exception e) {
+            return super.onContextItemSelected(item);
+        }
+        Log.v("TAG", "Positon: " + position);
+        int id = item.getItemId();
+        if (id == R.id.action_rename) {
+            Log.v("TAG", "Floating context menu: Action rename");
+        } else if (id == R.id.action_delete) {
+            Log.v("TAG", "Floating context menu: Action delete");
+        } else if (id == R.id.action_copy) {
+            Log.v("TAG", "Floating context menu: Action copy");
+        } else if (id == R.id.action_cut) {
+            Log.v("TAG", "Floating context menu: Action cut");
+        }
+
+        return super.onContextItemSelected(item);
     }
 
     private void getAllFiles(String path) {
@@ -135,10 +170,7 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
         fileList = new LinkedList<>();
         File[] files = file.listFiles();
         try {
-            for (File f : files) {
-                Log.v("TAG", f.getAbsolutePath());
-                fileList.add(f);
-            }
+            Collections.addAll(fileList, files);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -176,6 +208,24 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
             toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
             toolbar.setTitle(file.getName());
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_new_file) {
+            Log.v("TAG", "Option menu: Action download");
+        } else if (id == R.id.action_new_folder) {
+            Log.v("TAG", "Option menu: Action share");
+        }
+
+        return true;
     }
 
 }
