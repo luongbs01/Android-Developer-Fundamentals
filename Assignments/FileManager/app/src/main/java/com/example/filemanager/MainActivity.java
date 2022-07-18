@@ -1,6 +1,7 @@
 package com.example.filemanager;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -9,13 +10,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.Settings;
+import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -23,6 +27,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -32,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private FileAdapter adapter;
+    private String fileName = "";
 
     private LinkedList<File> fileList = new LinkedList();
     private Stack<File> fileStack = new Stack<>();
@@ -62,30 +70,6 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
         Log.v("TAG", "sdPath: " + sdPath);
         fileStack.add(Environment.getExternalStorageDirectory());
 
-//        try {
-//            String path = sdPath + "/test_read.txt";
-//            File file = new File(path);
-//            FileInputStream fis = new FileInputStream(file);
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-//            String line = reader.readLine();
-//            reader.close();
-//
-//            Log.v("TAG", "First line: " + line);
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-
-//        try {
-//            String path = sdPath + "/test_write.txt";
-//            File file = new File(path);
-//            FileOutputStream fos = new FileOutputStream(file);
-//            OutputStreamWriter writer = new OutputStreamWriter(fos);
-//            writer.write("Thu xem co ghi duoc vao file khong?");
-//            writer.close();
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 Log.v("TAG", "Permission denied.");
@@ -101,37 +85,7 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
             startActivity(intent);
         }
 
-        if (Build.VERSION.SDK_INT >= 19) {
-            File[] files = getExternalFilesDirs(null);
-            try {
-                for (File f : files) {
-                    String path = f.getAbsolutePath();
-                    Log.v("TAG", path);
-                    if (!path.startsWith("/storage/emulated/0/")) {
-//                        String filePath = path.substring(0, path.indexOf("/Android")) + "/test_read.txt"; // /storage/0B07-3205/test_read.txt
-//                        Log.v("TAG", "file path: " + filePath);
-//                        try {
-//                            File file = new File(filePath);
-//                            FileInputStream fis = new FileInputStream(file);
-//                            BufferedReader reader = new BufferedReader(new InputStreamReader(fis));
-//                            String line = reader.readLine();
-//                            reader.close();
-//
-//                            Log.v("TAG", "First line (physical sd): " + line);
-//                        } catch (Exception ex) {
-//                            ex.printStackTrace();
-//                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
         getAllFiles(sdPath);
-
-        adapter = new FileAdapter(this, this, fileList);
-        recyclerView.setAdapter(adapter);
 
         registerForContextMenu(recyclerView);
     }
@@ -152,10 +106,40 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
         }
         Log.v("TAG", "Positon: " + position);
         int id = item.getItemId();
+
         if (id == R.id.action_rename) {
             Log.v("TAG", "Floating context menu: Action rename");
+            File file = new File(fileList.get(position).getAbsolutePath());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Enter new name:");
+
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    fileName = input.getText().toString();
+                    File file2 = new File(fileStack.peek(), "/" + fileName + getFileExtension(file));
+                    file.renameTo(file2);
+                    getAllFiles(fileStack.peek().getAbsolutePath());
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
         } else if (id == R.id.action_delete) {
             Log.v("TAG", "Floating context menu: Action delete");
+            File file = new File(fileList.get(position).getAbsolutePath());
+            file.delete();
+            getAllFiles(fileStack.peek().getAbsolutePath());
         } else if (id == R.id.action_copy) {
             Log.v("TAG", "Floating context menu: Action copy");
         } else if (id == R.id.action_cut) {
@@ -174,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
         } catch (Exception e) {
             e.printStackTrace();
         }
+        adapter = new FileAdapter(MainActivity.this, MainActivity.this, fileList);
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -198,8 +184,6 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
 
     private void processNavigation(File file) {
         getAllFiles(file.getAbsolutePath());
-        adapter = new FileAdapter(MainActivity.this, MainActivity.this, fileList);
-        recyclerView.setAdapter(adapter);
         Log.d("luong", "" + fileStack);
         if (fileStack.size() == 1) {
             toolbar.setNavigationIcon(null);
@@ -218,14 +202,58 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_new_file) {
-            Log.v("TAG", "Option menu: Action download");
-        } else if (id == R.id.action_new_folder) {
-            Log.v("TAG", "Option menu: Action share");
-        }
+        fileName = "";
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter name:");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                fileName = input.getText().toString();
+                int id = item.getItemId();
+                if (id == R.id.action_new_file) {
+                    Log.v("TAG", "Option menu: Action new file");
+                    File f = new File(fileStack.peek(), "/" + fileName + ".txt");
+                    try {
+                        FileOutputStream fos = new FileOutputStream(f);
+                        OutputStreamWriter writer = new OutputStreamWriter(fos);
+                        writer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    getAllFiles(fileStack.peek().getAbsolutePath());
+                } else if (id == R.id.action_new_folder) {
+                    Log.v("TAG", "Option menu: Action new folder");
+                    File f = new File(fileStack.peek(), fileName);
+                    if (!f.exists()) {
+                        f.mkdirs();
+                    }
+                    getAllFiles(fileStack.peek().getAbsolutePath());
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
 
         return true;
     }
 
+    private String getFileExtension(File file) {
+        String name = file.getName();
+        int lastIndexOf = name.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            return ""; // empty extension
+        }
+        return name.substring(lastIndexOf);
+    }
 }
