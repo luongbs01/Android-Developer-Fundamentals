@@ -27,8 +27,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -40,6 +44,9 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
     private RecyclerView recyclerView;
     private FileAdapter adapter;
     private String fileName = "";
+    private File from;
+    private File to;
+    private String inputPath, inputFile, outputPath;
 
     private LinkedList<File> fileList = new LinkedList();
     private Stack<File> fileStack = new Stack<>();
@@ -138,12 +145,32 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
         } else if (id == R.id.action_delete) {
             Log.v("TAG", "Floating context menu: Action delete");
             File file = new File(fileList.get(position).getAbsolutePath());
-            file.delete();
-            getAllFiles(fileStack.peek().getAbsolutePath());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Are you sure?");
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    file.delete();
+                    getAllFiles(fileStack.peek().getAbsolutePath());
+                }
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
         } else if (id == R.id.action_copy) {
             Log.v("TAG", "Floating context menu: Action copy");
+            inputPath = fileStack.peek().getAbsolutePath();
+            inputFile = "/" + fileList.get(position).getName();
         } else if (id == R.id.action_cut) {
             Log.v("TAG", "Floating context menu: Action cut");
+            from = new File(fileList.get(position).getAbsolutePath());
         }
 
         return super.onContextItemSelected(item);
@@ -202,48 +229,69 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        fileName = "";
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Enter name:");
+        if (item.getItemId() == R.id.action_paste) {
+            if (from != null) {
+                to = new File(fileStack.peek(), "/" + from.getName());
+                from.renameTo(to);
+                getAllFiles(fileStack.peek().getAbsolutePath());
+                from = null;
+                to = null;
+            }
+            if (inputFile != null) {
+                outputPath = fileStack.peek().getAbsolutePath();
+                copyFile(inputPath, inputFile, outputPath);
+                getAllFiles(fileStack.peek().getAbsolutePath());
+                Log.d("luong", "inputPath: " + inputPath);
+                Log.d("luong", "inputFile: " + inputFile);
+                Log.d("luong", "outputPath: " + outputPath);
+                inputPath = null;
+                inputFile = null;
+                outputPath = null;
+            }
+        } else if (item.getItemId() == R.id.action_new_file || item.getItemId() == R.id.action_new_folder) {
+            fileName = "";
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Enter name:");
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                fileName = input.getText().toString();
-                int id = item.getItemId();
-                if (id == R.id.action_new_file) {
-                    Log.v("TAG", "Option menu: Action new file");
-                    File f = new File(fileStack.peek(), "/" + fileName + ".txt");
-                    try {
-                        FileOutputStream fos = new FileOutputStream(f);
-                        OutputStreamWriter writer = new OutputStreamWriter(fos);
-                        writer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    fileName = input.getText().toString();
+                    int id = item.getItemId();
+                    if (id == R.id.action_new_file) {
+                        Log.v("TAG", "Option menu: Action new file");
+                        File f = new File(fileStack.peek(), "/" + fileName + ".txt");
+                        try {
+                            FileOutputStream fos = new FileOutputStream(f);
+                            OutputStreamWriter writer = new OutputStreamWriter(fos);
+                            writer.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        getAllFiles(fileStack.peek().getAbsolutePath());
+                    } else if (id == R.id.action_new_folder) {
+                        Log.v("TAG", "Option menu: Action new folder");
+                        File f = new File(fileStack.peek(), fileName);
+                        if (!f.exists()) {
+                            f.mkdirs();
+                        }
+                        getAllFiles(fileStack.peek().getAbsolutePath());
                     }
-                    getAllFiles(fileStack.peek().getAbsolutePath());
-                } else if (id == R.id.action_new_folder) {
-                    Log.v("TAG", "Option menu: Action new folder");
-                    File f = new File(fileStack.peek(), fileName);
-                    if (!f.exists()) {
-                        f.mkdirs();
-                    }
-                    getAllFiles(fileStack.peek().getAbsolutePath());
                 }
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
+            });
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
 
-        builder.show();
+            builder.show();
+        }
 
         return true;
     }
@@ -255,5 +303,42 @@ public class MainActivity extends AppCompatActivity implements FileAdapter.OnFil
             return ""; // empty extension
         }
         return name.substring(lastIndexOf);
+    }
+
+    private void copyFile(String inputPath, String inputFile, String outputPath) {
+
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+
+            //create output directory if it doesn't exist
+            File dir = new File(outputPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+
+            in = new FileInputStream(inputPath + inputFile);
+            out = new FileOutputStream(outputPath + inputFile);
+
+            byte[] buffer = new byte[1024];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+            in.close();
+            in = null;
+
+            // write the output file (You have now copied the file)
+            out.flush();
+            out.close();
+            out = null;
+
+        } catch (FileNotFoundException fnfe1) {
+            Log.e("tag", fnfe1.getMessage());
+        } catch (Exception e) {
+            Log.e("tag", e.getMessage());
+        }
+
     }
 }
