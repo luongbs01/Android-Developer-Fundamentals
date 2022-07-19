@@ -60,7 +60,12 @@ public class MainActivity extends AppCompatActivity implements StudentAdapter.On
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_new_student) {
-
+            Intent intent = new Intent(this, UpdateInfoActivity.class);
+            intent.putExtra("id", "");
+            intent.putExtra("name", "");
+            intent.putExtra("email", "");
+            intent.putExtra("dob", "");
+            startActivity(intent);
         }
         return true;
     }
@@ -72,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements StudentAdapter.On
         intent.putExtra("name", student.getName());
         intent.putExtra("email", student.getEmail());
         intent.putExtra("dob", student.getDoB());
+        intent.putExtra("code", 1);
         startActivity(intent);
     }
 }

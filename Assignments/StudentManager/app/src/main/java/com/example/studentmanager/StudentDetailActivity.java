@@ -82,6 +82,7 @@ public class StudentDetailActivity extends AppCompatActivity {
                 intent.putExtra("name", studentName);
                 intent.putExtra("email", studentEmail);
                 intent.putExtra("dob", DoB);
+                intent.putExtra("code", 1);
                 startActivity(intent);
             }
         });

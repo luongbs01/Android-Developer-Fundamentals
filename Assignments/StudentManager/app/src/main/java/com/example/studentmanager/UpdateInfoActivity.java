@@ -26,6 +26,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
     private String studentName;
     private String studentEmail;
     private String DoB;
+    private int code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class UpdateInfoActivity extends AppCompatActivity {
             studentName = intent.getStringExtra("name");
             studentEmail = intent.getStringExtra("email");
             DoB = intent.getStringExtra("dob");
+            code = intent.getIntExtra("code", 1);
 
             editId.setText(studentID);
             editName.setText(studentName);
@@ -77,7 +79,10 @@ public class UpdateInfoActivity extends AppCompatActivity {
                         studentEmail = editEmail.getText().toString();
                         DoB = editDob.getText().toString();
 
-                        db.updateStudent(new StudentModel(studentID, studentName, studentEmail, DoB));
+                        if (code == 2)
+                            db.updateStudent(new StudentModel(studentID, studentName, studentEmail, DoB));
+                        else if (code == 1)
+                            db.addStudent(new StudentModel(studentID, studentName, studentEmail, DoB));
                         finish();
                     }
                 });
