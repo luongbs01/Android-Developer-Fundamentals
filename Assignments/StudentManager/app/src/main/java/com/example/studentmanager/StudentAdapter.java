@@ -18,7 +18,6 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
     private LayoutInflater inflater;
     private Context context;
     private OnStudentClickListener listener;
-    private int position;
 
     interface OnStudentClickListener {
         void onStudentClick(StudentModel student);
@@ -43,12 +42,12 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
         StudentModel student = studentList.get(position);
         holder.studentId.setText(student.getStudentID());
         holder.name.setText(student.getName());
-        holder.email.setText(student.getEmail());
-        holder.dob.setText(student.getDoB());
+//        holder.email.setText(student.getEmail());
+//        holder.dob.setText(student.getDoB());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                listener.onStudentClick(student);
             }
         });
 
@@ -63,16 +62,16 @@ public class StudentAdapter extends RecyclerView.Adapter<StudentAdapter.StudentV
 
         public final TextView studentId;
         public final TextView name;
-        public final TextView email;
-        public final TextView dob;
+        //        public final TextView email;
+//        public final TextView dob;
         final StudentAdapter adapter;
 
         public StudentViewHolder(@NonNull View itemView, StudentAdapter adapter) {
             super(itemView);
             studentId = itemView.findViewById(R.id.studentId);
             name = itemView.findViewById(R.id.name);
-            email = itemView.findViewById(R.id.email);
-            dob = itemView.findViewById(R.id.dob);
+//            email = itemView.findViewById(R.id.email);
+//            dob = itemView.findViewById(R.id.dob);
             this.adapter = adapter;
         }
     }

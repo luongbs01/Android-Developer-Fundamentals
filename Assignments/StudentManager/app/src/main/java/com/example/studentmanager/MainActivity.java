@@ -1,5 +1,6 @@
 package com.example.studentmanager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements StudentAdapter.On
 //        db.addStudent(new StudentModel("20194109", "Hoang Minh Luong2", "luong2.hm194108@sis.hust.edu.vn", "19/06/2001"));
 //        db.addStudent(new StudentModel("20194110", "Hoang Minh Luong3", "luong3.hm194108@sis.hust.edu.vn", "19/06/2001"));
 //        db.addStudent(new StudentModel("20194111", "Hoang Minh Luong4", "luong4.hm194108@sis.hust.edu.vn", "19/06/2001"));
-//        db.addStudent(new StudentModel("20194112", "Hoang Minh Luong5", "luong5.hm194108@sis.hust.edu.vn", "19/06/2001"));
+//        db.addStudent(new StudentModel("20194113", "Hoang Minh Luong6", "luong6.hm194108@sis.hust.edu.vn", "19/06/2001"));
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -39,6 +40,12 @@ public class MainActivity extends AppCompatActivity implements StudentAdapter.On
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(mDividerItemDecoration);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         studentList = db.getAllStudents();
         recyclerView.setAdapter(new StudentAdapter(MainActivity.this, MainActivity.this, studentList));
     }
@@ -60,6 +67,11 @@ public class MainActivity extends AppCompatActivity implements StudentAdapter.On
 
     @Override
     public void onStudentClick(StudentModel student) {
-
+        Intent intent = new Intent(this, StudentDetailActivity.class);
+        intent.putExtra("id", student.getStudentID());
+        intent.putExtra("name", student.getName());
+        intent.putExtra("email", student.getEmail());
+        intent.putExtra("dob", student.getDoB());
+        startActivity(intent);
     }
 }
